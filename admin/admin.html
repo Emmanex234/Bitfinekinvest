@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - Bitfinekinvest</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Work+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../css/styles.css">
+</head>
+<body>
+    <div class="dashboard">
+        <!-- Dashboard Header -->
+        <div class="dashboard-header">
+            <div class="dashboard-logo">Admin <span>Panel</span></div>
+            <div class="dashboard-user">
+                <span id="userName">Admin</span>
+                <div class="user-avatar" style="background: linear-gradient(135deg, var(--gold) 0%, #C19B2E 100%);">A</div>
+                <button class="btn btn-outline" style="padding: 0.5rem 1rem; margin-left: 1rem;" onclick="logout()">
+                    Logout
+                </button>
+            </div>
+        </div>
+
+        <!-- Dashboard Container -->
+        <div class="dashboard-container">
+            <!-- Welcome Section -->
+            <div class="dashboard-welcome">
+                <h1>Admin Dashboard</h1>
+                <p>Manage users, verify transactions, and oversee platform operations</p>
+            </div>
+
+            <!-- Tab Navigation -->
+            <div style="margin-bottom: 2rem; border-bottom: 2px solid var(--gray); display: flex; gap: 2rem;">
+                <button class="tab-btn active" onclick="switchTab('users')">👥 Users</button>
+                <button class="tab-btn" onclick="switchTab('deposits')">💎 Pending Deposits</button>
+                <button class="tab-btn" onclick="switchTab('withdrawals')">💰 Pending Withdrawals</button>
+                <button class="tab-btn" onclick="switchTab('investments')">📊 All Investments</button>
+                <button class="tab-btn" onclick="switchTab('transactions')">📝 All Transactions</button>
+            </div>
+
+            <!-- Users Tab -->
+            <div class="tab-content active" id="usersTab">
+                <div class="dashboard-section">
+                    <div class="section-header">
+                        <h2>Registered Users</h2>
+                    </div>
+                    <div id="usersTable">
+                        <p style="text-align: center; padding: 2rem;">Loading users...</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Deposits Tab -->
+            <div class="tab-content" id="depositsTab">
+                <div class="dashboard-section">
+                    <div class="section-header">
+                        <h2>Pending Deposits</h2>
+                    </div>
+                    <div id="depositsTable">
+                        <p style="text-align: center; padding: 2rem;">Loading deposits...</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Withdrawals Tab -->
+            <div class="tab-content" id="withdrawalsTab">
+                <div class="dashboard-section">
+                    <div class="section-header">
+                        <h2>Pending Withdrawals</h2>
+                    </div>
+                    <div id="withdrawalsTable">
+                        <p style="text-align: center; padding: 2rem;">Loading withdrawals...</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Investments Tab -->
+            <div class="tab-content" id="investmentsTab">
+                <div class="dashboard-section">
+                    <div class="section-header">
+                        <h2>All Investments</h2>
+                    </div>
+                    <div id="allInvestmentsTable">
+                        <p style="text-align: center; padding: 2rem;">Loading investments...</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Transactions Tab -->
+            <div class="tab-content" id="transactionsTab">
+                <div class="dashboard-section">
+                    <div class="section-header">
+                        <h2>All Transactions</h2>
+                    </div>
+                    <div id="allTransactionsTable">
+                        <p style="text-align: center; padding: 2rem;">Loading transactions...</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Investment Details Modal -->
+    <div class="modal" id="investmentModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Investment Details</h3>
+                <button class="modal-close">×</button>
+            </div>
+            <div class="modal-body" id="investmentDetails">
+                <!-- Details loaded dynamically -->
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-outline" onclick="hideModal('investmentModal')">Close</button>
+                <button class="btn" style="background: var(--danger); color: white;" id="rejectBtn">Reject</button>
+                <button class="btn btn-gold" id="approveBtn">Approve</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Withdrawal Details Modal -->
+    <div class="modal" id="withdrawalModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Withdrawal Details</h3>
+                <button class="modal-close">×</button>
+            </div>
+            <div class="modal-body" id="withdrawalDetails">
+                <!-- Details loaded dynamically -->
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-outline" onclick="hideModal('withdrawalModal')">Close</button>
+                <button class="btn" style="background: var(--danger); color: white;" id="rejectWithdrawalBtn">Reject</button>
+                <button class="btn btn-gold" id="approveWithdrawalBtn">Approve & Mark Sent</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- User Details Modal -->
+    <div class="modal" id="userModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>User Details</h3>
+                <button class="modal-close">×</button>
+            </div>
+            <div class="modal-body" id="userDetails">
+                <!-- Details loaded dynamically -->
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-outline" onclick="hideModal('userModal')">Close</button>
+                <button class="btn" style="background: var(--danger); color: white;" id="blockUserBtn">Block User</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Loading Overlay -->
+    <div class="loading" id="loading">
+        <div class="spinner"></div>
+    </div>
+
+    <!-- Toast Container -->
+    <div id="toastContainer"></div>
+
+    <style>
+        .tab-btn {
+            padding: 1rem 0;
+            background: none;
+            border: none;
+            color: var(--accent-blue);
+            font-weight: 500;
+            cursor: pointer;
+            position: relative;
+            transition: all 0.3s ease;
+        }
+        
+        .tab-btn.active {
+            color: var(--primary-blue);
+        }
+        
+        .tab-btn.active::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background: var(--gold);
+        }
+        
+        .tab-btn:hover {
+            color: var(--primary-blue);
+        }
+        
+        .tab-content {
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        .action-btn {
+            padding: 0.4rem 0.8rem;
+            font-size: 0.85rem;
+            margin: 0 0.25rem;
+        }
+    </style>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="../js/supabase.js"></script>
+    <script src="../js/auth.js"></script>
+    <script src="../js/admin.js"></script>
+</body>
+</html>

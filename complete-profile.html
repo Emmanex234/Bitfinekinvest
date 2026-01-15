@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Complete Profile - Bitfinekinvest</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Work+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+    <div class="auth-container">
+        <div class="auth-left">
+            <div class="auth-brand">Bitfinek<span>invest</span></div>
+            <div class="auth-tagline">
+                Complete your profile to start investing. We need a few more details to secure your account.
+            </div>
+        </div>
+        
+        <div class="auth-right">
+            <div class="auth-form-container">
+                <h2 class="auth-form-title">Complete Your Profile</h2>
+                <p class="auth-form-subtitle">Required information before investing</p>
+                
+                <form id="profileForm">
+                    <div class="form-group">
+                        <label class="form-label">Date of Birth *</label>
+                        <input type="date" id="dob" class="form-input" required>
+                        <div class="error-message" id="dobError"></div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Residential Address *</label>
+                        <textarea 
+                            id="address" 
+                            class="form-input" 
+                            rows="3" 
+                            placeholder="Street address, city, state, zip code"
+                            required
+                        ></textarea>
+                        <div class="error-message" id="addressError"></div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Crypto Wallet Address * (For Withdrawals)</label>
+                        <input 
+                            type="text" 
+                            id="walletAddress" 
+                            class="form-input" 
+                            placeholder="Your Bitcoin, Ethereum, or Tron address"
+                            required
+                        >
+                        <div class="error-message" id="walletError"></div>
+                        <p style="font-size: 0.85rem; color: var(--accent-blue); margin-top: 0.5rem;">
+                            ⓘ Ensure this address is correct. Withdrawals will be sent to this address.
+                        </p>
+                    </div>
+                    
+                    <button type="submit" class="btn btn-gold btn-full">Complete Profile</button>
+                </form>
+                
+                <div class="auth-footer">
+                    Need help? <a href="mailto:support@bitfinekinvest.com">Contact Support</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Loading Overlay -->
+    <div class="loading" id="loading">
+        <div class="spinner"></div>
+    </div>
+
+    <!-- Toast Container -->
+    <div id="toastContainer"></div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="/js/supabase.js"></script>
+    <script src="/js/auth.js"></script>
+    <script>
+        // Check authentication
+        (async () => {
+            const authed = await requireAuth();
+            if (!authed) return;
+            
+            // Check if profile already completed
+            const profile = await getCurrentUserProfile();
+            if (profile && profile.profile_completed) {
+                window.location.href = 'dashboard.html';
+            }
+        })();
+        
+        // Complete profile form
+        document.getElementById('profileForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            // Clear previous errors
+            document.querySelectorAll('.error-message').forEach(el => el.textContent = '');
+            document.querySelectorAll('.form-input').forEach(el => el.classList.remove('error'));
+            
+            const dob = document.getElementById('dob').value;
+            const address = document.getElementById('address').value.trim();
+            const walletAddress = document.getElementById('walletAddress').value.trim();
+            
+            let hasError = false;
+            
+            // Validate date of birth (must be 18+)
+            const birthDate = new Date(dob);
+            const today = new Date();
+            const age = today.getFullYear() - birthDate.getFullYear();
+            const monthDiff = today.getMonth() - birthDate.getMonth();
+            
+            if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
+                age--;
+            }
+            
+            if (age < 18) {
+                showFieldError('dob', 'You must be at least 18 years old');
+                hasError = true;
+            }
+            
+            // Validate address
+            if (address.length < 10) {
+                showFieldError('address', 'Please enter your complete address');
+                hasError = true;
+            }
+            
+            // Validate wallet address
+            if (!isValidWalletAddress(walletAddress)) {
+                showFieldError('wallet', 'Please enter a valid crypto wallet address');
+                hasError = true;
+            }
+            
+            if (hasError) return;
+            
+            showLoading();
+            
+            try {
+                const { data: { user } } = await supabase.auth.getUser();
+                
+                // Update profile
+                const { error } = await supabase
+                    .from('profiles')
+                    .update({
+                        date_of_birth: dob,
+                        address: address,
+                        crypto_wallet_address: walletAddress,
+                        profile_completed: true,
+                        updated_at: new Date().toISOString()
+                    })
+                    .eq('id', user.id);
+                
+                if (error) throw error;
+                
+                // Log audit
+                await logAudit('profile_completed', {
+                    date_of_birth: dob,
+                    has_wallet: true
+                });
+                
+                hideLoading();
+                showToast('Profile completed successfully!', 'success');
+                
+                // Redirect to dashboard
+                setTimeout(() => {
+                    window.location.href = 'dashboard.html';
+                }, 1500);
+                
+            } catch (error) {
+                hideLoading();
+                showToast(error.message || 'Failed to complete profile. Please try again.', 'error');
+            }
+        });
+        
+        function showFieldError(fieldId, message) {
+            const input = document.getElementById(fieldId);
+            const error = document.getElementById(fieldId + 'Error');
+            if (input) input.classList.add('error');
+            if (error) error.textContent = message;
+        }
+        
+        // Set max date to 18 years ago
+        const maxDate = new Date();
+        maxDate.setFullYear(maxDate.getFullYear() - 18);
+        document.getElementById('dob').max = maxDate.toISOString().split('T')[0];
+    </script>
+</body>
+</html>

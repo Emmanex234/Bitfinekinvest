@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Verify Email - Bitfinekinvest</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Work+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+    <div class="auth-container">
+        <div class="auth-left">
+            <div class="auth-brand">Bitfinek<span>invest</span></div>
+            <div class="auth-tagline">
+                Verify your email address to secure your account and access the platform.
+            </div>
+        </div>
+        
+        <div class="auth-right">
+            <div class="auth-form-container">
+                <h2 class="auth-form-title">Verify Email</h2>
+                <p class="auth-form-subtitle" id="emailDisplay">Enter the 6-digit code sent to your email</p>
+                
+                <form id="verifyForm">
+                    <div class="form-group">
+                        <label class="form-label">Verification Code</label>
+                        <input 
+                            type="text" 
+                            id="code" 
+                            class="form-input" 
+                            placeholder="000000" 
+                            maxlength="6"
+                            pattern="[0-9]{6}"
+                            required
+                            style="font-size: 1.5rem; text-align: center; letter-spacing: 0.5rem;"
+                        >
+                        <div class="error-message" id="codeError"></div>
+                    </div>
+                    
+                    <button type="submit" class="btn btn-gold btn-full">Verify Email</button>
+                </form>
+                
+                <div class="auth-footer">
+                    Didn't receive the code? <a href="#" id="resendCode">Resend Code</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Loading Overlay -->
+    <div class="loading" id="loading">
+        <div class="spinner"></div>
+    </div>
+
+    <!-- Toast Container -->
+    <div id="toastContainer"></div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="/js/supabase.js"></script>
+    <script src="/js/auth.js"></script>
+    <script>
+        // Get email from URL parameter
+        const urlParams = new URLSearchParams(window.location.search);
+        const email = urlParams.get('email');
+        
+        if (!email) {
+            window.location.href = 'register.html';
+        }
+        
+        document.getElementById('emailDisplay').textContent = `Enter the 6-digit code sent to ${email}`;
+        
+        // Verify code
+        document.getElementById('verifyForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const code = document.getElementById('code').value.trim();
+            
+            if (code.length !== 6) {
+                showToast('Please enter a valid 6-digit code', 'error');
+                return;
+            }
+            
+            showLoading();
+            
+            try {
+                // Check verification code
+                const { data: verification, error: verifyError } = await supabase
+                    .from('email_verifications')
+                    .select('*')
+                    .eq('email', email)
+                    .eq('code', code)
+                    .eq('verified', false)
+                    .single();
+                
+                if (verifyError || !verification) {
+                    throw new Error('Invalid or expired verification code');
+                }
+                
+                // Check if code is expired
+                const expiresAt = new Date(verification.expires_at);
+                if (expiresAt < new Date()) {
+                    throw new Error('Verification code has expired. Please request a new one.');
+                }
+                
+                // Mark code as verified
+                await supabase
+                    .from('email_verifications')
+                    .update({ verified: true })
+                    .eq('id', verification.id);
+                
+                // Update profile
+                const { data: { user } } = await supabase.auth.getUser();
+                await supabase
+                    .from('profiles')
+                    .update({ email_verified: true })
+                    .eq('email', email);
+                
+                // Log audit
+                await logAudit('email_verified', { email });
+                
+                hideLoading();
+                showToast('Email verified successfully!', 'success');
+                
+                // Redirect to complete profile
+                setTimeout(() => {
+                    window.location.href = 'complete-profile.html';
+                }, 1500);
+                
+            } catch (error) {
+                hideLoading();
+                showToast(error.message || 'Verification failed. Please try again.', 'error');
+            }
+        });
+        
+        // Resend code
+        document.getElementById('resendCode').addEventListener('click', async (e) => {
+            e.preventDefault();
+            
+            showLoading();
+            
+            try {
+                // Generate new code
+                const newCode = generateVerificationCode();
+                
+                // Delete old codes
+                await supabase
+                    .from('email_verifications')
+                    .delete()
+                    .eq('email', email)
+                    .eq('verified', false);
+                
+                // Insert new code
+                await supabase
+                    .from('email_verifications')
+                    .insert([{
+                        email: email,
+                        code: newCode,
+                        expires_at: new Date(Date.now() + 15 * 60000).toISOString()
+                    }]);
+                
+                // Send email (implement your email service here)
+                console.log(`New verification code for ${email}: ${newCode}`);
+                
+                hideLoading();
+                showToast('Verification code resent! Check your email.', 'success');
+                
+            } catch (error) {
+                hideLoading();
+                showToast('Failed to resend code. Please try again.', 'error');
+            }
+        });
+        
+        // Auto-format code input
+        document.getElementById('code').addEventListener('input', (e) => {
+            e.target.value = e.target.value.replace(/\D/g, '').substring(0, 6);
+        });
+    </script>
+</body>
+</html>

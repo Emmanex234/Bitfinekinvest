@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register - Bitfinekinvest</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Work+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+    <div class="auth-container">
+        <div class="auth-left">
+            <div class="auth-brand">Bitfinek<span>invest</span></div>
+            <div class="auth-tagline">
+                Join our professional crypto investment platform. Secure, transparent, and verified operations for your peace of mind.
+            </div>
+        </div>
+        
+        <div class="auth-right">
+            <div class="auth-form-container">
+                <h2 class="auth-form-title">Create Account</h2>
+                <p class="auth-form-subtitle">Start your crypto investment journey</p>
+                
+                <form id="registerForm">
+                    <div class="form-group">
+                        <label class="form-label">Full Name *</label>
+                        <input type="text" id="fullName" class="form-input" placeholder="John Doe" required>
+                        <div class="error-message" id="fullNameError"></div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Email Address *</label>
+                        <input type="email" id="email" class="form-input" placeholder="john@example.com" required>
+                        <div class="error-message" id="emailError"></div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Phone Number *</label>
+                        <input type="tel" id="phone" class="form-input" placeholder="+1234567890" required>
+                        <div class="error-message" id="phoneError"></div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Country *</label>
+                        <input type="text" id="country" class="form-input" placeholder="United States" required>
+                        <div class="error-message" id="countryError"></div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Password *</label>
+                        <input type="password" id="password" class="form-input" placeholder="Min. 8 characters" required>
+                        <div class="error-message" id="passwordError"></div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Confirm Password *</label>
+                        <input type="password" id="confirmPassword" class="form-input" placeholder="Confirm your password" required>
+                        <div class="error-message" id="confirmPasswordError"></div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <div class="form-checkbox">
+                            <input type="checkbox" id="terms" required>
+                            <label for="terms">
+                                I accept the <a href="#">Terms & Conditions</a> and acknowledge the 
+                                <a href="#">Risk Disclosure</a> regarding cryptocurrency investments.
+                            </label>
+                        </div>
+                        <div class="error-message" id="termsError"></div>
+                    </div>
+                    
+                    <button type="submit" class="btn btn-gold btn-full">Create Account</button>
+                </form>
+                
+                <div class="auth-footer">
+                    Already have an account? <a href="login.html">Login here</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Loading Overlay -->
+    <div class="loading" id="loading">
+        <div class="spinner"></div>
+    </div>
+
+    <!-- Toast Container -->
+    <div id="toastContainer"></div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="/js/supabase.js"></script>
+    <script src="/js/auth.js"></script>
+    <script>
+        document.getElementById('registerForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            // Clear previous errors
+            document.querySelectorAll('.error-message').forEach(el => el.textContent = '');
+            document.querySelectorAll('.form-input').forEach(el => el.classList.remove('error'));
+            
+            // Get form values
+            const fullName = document.getElementById('fullName').value.trim();
+            const email = document.getElementById('email').value.trim();
+            const phone = document.getElementById('phone').value.trim();
+            const country = document.getElementById('country').value.trim();
+            const password = document.getElementById('password').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+            const terms = document.getElementById('terms').checked;
+            
+            // Validation
+            let hasError = false;
+            
+            if (fullName.length < 2) {
+                showFieldError('fullName', 'Please enter your full name');
+                hasError = true;
+            }
+            
+            if (!isValidEmail(email)) {
+                showFieldError('email', 'Please enter a valid email address');
+                hasError = true;
+            }
+            
+            if (phone.length < 10) {
+                showFieldError('phone', 'Please enter a valid phone number');
+                hasError = true;
+            }
+            
+            if (country.length < 2) {
+                showFieldError('country', 'Please enter your country');
+                hasError = true;
+            }
+            
+            if (password.length < 8) {
+                showFieldError('password', 'Password must be at least 8 characters');
+                hasError = true;
+            }
+            
+            if (password !== confirmPassword) {
+                showFieldError('confirmPassword', 'Passwords do not match');
+                hasError = true;
+            }
+            
+            if (!terms) {
+                showFieldError('terms', 'You must accept the terms and conditions');
+                hasError = true;
+            }
+            
+            if (hasError) return;
+            
+            // Show loading
+            showLoading();
+            
+            try {
+                // Register user with Supabase
+                const { data, error } = await supabaseClient.auth.signUp({
+                    email: email,
+                    password: password,
+                    options: {
+                        data: {
+                            full_name: fullName,
+                            phone: phone,
+                            country: country
+                        }
+                    }
+                });
+                
+                if (error) throw error;
+                
+                // Create profile record
+                const { error: profileError } = await supabaseClient
+                    .from('profiles')
+                    .insert([{
+                        id: data.user.id,
+                        full_name: fullName,
+                        email: email,
+                        phone: phone,
+                        country: country,
+                        email_verified: false,
+                        profile_completed: false
+                    }]);
+                
+                if (profileError) throw profileError;
+                
+                // Generate and send verification code
+                const verificationCode = generateVerificationCode();
+                await sendVerificationEmail(email, verificationCode, fullName);
+                
+                // Store verification code
+                const { error: verifyError } = await supabaseClient
+                    .from('email_verifications')
+                    .insert([{
+                        email: email,
+                        code: verificationCode,
+                        expires_at: new Date(Date.now() + 15 * 60000).toISOString() // 15 minutes
+                    }]);
+                
+                if (verifyError) throw verifyError;
+                
+                hideLoading();
+                showToast('Account created! Please check your email for verification code.', 'success');
+                
+                // Redirect to verification page
+                setTimeout(() => {
+                    window.location.href = `verify.html?email=${encodeURIComponent(email)}`;
+                }, 2000);
+                
+            } catch (error) {
+                hideLoading();
+                showToast(error.message || 'Registration failed. Please try again.', 'error');
+            }
+        });
+        
+        function showFieldError(fieldId, message) {
+            const input = document.getElementById(fieldId);
+            const error = document.getElementById(fieldId + 'Error');
+            input.classList.add('error');
+            error.textContent = message;
+        }
+        
+        function isValidEmail(email) {
+            return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+        }
+        
+        function generateVerificationCode() {
+            return Math.floor(100000 + Math.random() * 900000).toString();
+        }
+        
+        async function sendVerificationEmail(email, code, name) {
+            // In production, this would call your email service
+            // For now, we'll just log it
+            console.log(`Verification code for ${email}: ${code}`);
+            
+            // You would integrate with an email service like:
+            // - SendGrid
+            // - AWS SES
+            // - Mailgun
+            // Example implementation would go here
+        }
+    </script>
+</body>
+</html>

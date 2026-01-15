@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Bitfinekinvest</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Work+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+    <div class="dashboard">
+        <!-- Dashboard Header -->
+        <div class="dashboard-header">
+            <div class="dashboard-logo">Bitfinek<span>invest</span></div>
+            <div class="dashboard-user">
+                <span id="userName">Loading...</span>
+                <div class="user-avatar" id="userAvatar">U</div>
+                <button class="btn btn-outline" style="padding: 0.5rem 1rem; margin-left: 1rem;" onclick="logout()">
+                    Logout
+                </button>
+            </div>
+        </div>
+
+        <!-- Dashboard Container -->
+        <div class="dashboard-container">
+            <!-- Welcome Section -->
+            <div class="dashboard-welcome">
+                <h1>Welcome back, <span id="welcomeName">Investor</span></h1>
+                <p>Manage your crypto investments and track your portfolio performance</p>
+            </div>
+
+            <!-- Quick Actions -->
+            <div style="margin-bottom: 2rem; display: flex; gap: 1rem; flex-wrap: wrap;">
+                <button class="btn btn-gold" onclick="showModal('plansModal')">
+                    📊 View Investment Plans
+                </button>
+                <button class="btn btn-outline" onclick="showModal('withdrawModal')">
+                    💰 Request Withdrawal
+                </button>
+            </div>
+
+            <!-- Stats Grid -->
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-header">
+                        <div>
+                            <div class="stat-label">Total Balance</div>
+                            <div class="stat-value" id="totalBalance">$0.00</div>
+                            <div class="stat-change">Available for withdrawal</div>
+                        </div>
+                        <div class="stat-icon blue">💎</div>
+                    </div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-header">
+                        <div>
+                            <div class="stat-label">Active Investments</div>
+                            <div class="stat-value" id="activeInvestments">0</div>
+                            <div class="stat-change">Currently running</div>
+                        </div>
+                        <div class="stat-icon gold">📈</div>
+                    </div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-header">
+                        <div>
+                            <div class="stat-label">Total Profit</div>
+                            <div class="stat-value" id="totalProfit">$0.00</div>
+                            <div class="stat-change">Accrued returns</div>
+                        </div>
+                        <div class="stat-icon green">💰</div>
+                    </div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-header">
+                        <div>
+                            <div class="stat-label">Pending Actions</div>
+                            <div class="stat-value" id="pendingCount">0</div>
+                            <div class="stat-change">Awaiting approval</div>
+                        </div>
+                        <div class="stat-icon blue">⏳</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Active Investments -->
+            <div class="dashboard-section">
+                <div class="section-header">
+                    <h2>My Investments</h2>
+                </div>
+                <div id="investmentsTable">
+                    <p style="text-align: center; padding: 2rem; color: var(--accent-blue);">
+                        Loading investments...
+                    </p>
+                </div>
+            </div>
+
+            <!-- Recent Transactions -->
+            <div class="dashboard-section">
+                <div class="section-header">
+                    <h2>Recent Transactions</h2>
+                </div>
+                <div id="transactionsTable">
+                    <p style="text-align: center; padding: 2rem; color: var(--accent-blue);">
+                        Loading transactions...
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Investment Plans Modal -->
+    <div class="modal" id="plansModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Investment Plans</h3>
+                <button class="modal-close">×</button>
+            </div>
+            <div class="modal-body">
+                <div class="plans-grid" id="plansGrid">
+                    <p style="text-align: center; padding: 2rem;">Loading plans...</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Deposit Modal -->
+    <div class="modal" id="depositModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Make Deposit</h3>
+                <button class="modal-close">×</button>
+            </div>
+            <div class="modal-body">
+                <form id="depositForm">
+                    <input type="hidden" id="selectedPlanId">
+                    <div class="form-group">
+                        <label class="form-label">Investment Amount ($)</label>
+                        <input type="number" id="depositAmount" class="form-input" step="0.01" required>
+                        <div class="error-message" id="amountError"></div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Select Cryptocurrency</label>
+                        <select id="cryptoType" class="form-input" required>
+                            <option value="">Choose cryptocurrency...</option>
+                            <option value="BTC">Bitcoin (BTC)</option>
+                            <option value="ETH">Ethereum (ETH)</option>
+                            <option value="USDT">Tether USDT (TRC-20)</option>
+                        </select>
+                    </div>
+                    
+                    <div id="walletInfo" style="display: none; background: var(--gray); padding: 1.5rem; border-radius: 8px; margin: 1rem 0;">
+                        <h4 style="color: var(--primary-blue); margin-bottom: 1rem;">Send Crypto To:</h4>
+                        <div style="margin-bottom: 0.5rem;">
+                            <strong>Network:</strong> <span id="cryptoNetwork"></span>
+                        </div>
+                        <div style="margin-bottom: 1rem;">
+                            <strong>Wallet Address:</strong>
+                            <div style="display: flex; gap: 0.5rem; align-items: center; margin-top: 0.5rem;">
+                                <input type="text" id="walletAddressDisplay" readonly class="form-input" style="flex: 1;">
+                                <button type="button" class="btn btn-outline" style="padding: 0.5rem 1rem;" onclick="copyWalletAddress()">
+                                    Copy
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Upload Proof of Payment *</label>
+                        <input type="file" id="proofFile" class="form-input" accept="image/*" required>
+                        <p style="font-size: 0.85rem; color: var(--accent-blue); margin-top: 0.5rem;">
+                            Upload screenshot of transaction confirmation
+                        </p>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Transaction Hash (Optional)</label>
+                        <input type="text" id="txHash" class="form-input" placeholder="Blockchain transaction ID">
+                    </div>
+                    
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-outline" onclick="hideModal('depositModal')">Cancel</button>
+                        <button type="submit" class="btn btn-gold">Submit Deposit</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Withdrawal Modal -->
+    <div class="modal" id="withdrawModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Request Withdrawal</h3>
+                <button class="modal-close">×</button>
+            </div>
+            <div class="modal-body">
+                <form id="withdrawForm">
+                    <div class="form-group">
+                        <label class="form-label">Withdrawal Amount ($)</label>
+                        <input type="number" id="withdrawAmount" class="form-input" step="0.01" required>
+                        <p style="font-size: 0.85rem; color: var(--accent-blue); margin-top: 0.5rem;">
+                            Available: <strong id="availableBalance">$0.00</strong>
+                        </p>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Your Wallet Address</label>
+                        <input type="text" id="withdrawWallet" class="form-input" readonly>
+                        <p style="font-size: 0.85rem; color: var(--accent-blue); margin-top: 0.5rem;">
+                            ⓘ Withdrawal will be sent to this address
+                        </p>
+                    </div>
+                    
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-outline" onclick="hideModal('withdrawModal')">Cancel</button>
+                        <button type="submit" class="btn btn-gold">Submit Request</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Loading Overlay -->
+    <div class="loading" id="loading">
+        <div class="spinner"></div>
+    </div>
+
+    <!-- Toast Container -->
+    <div id="toastContainer"></div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="/js/supabase.js"></script>
+    <script src="/js/auth.js"></script>
+    <script src="/js/dashboard.js"></script>
+</body>
+</html>

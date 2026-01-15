@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Bitfinekinvest</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Work+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+    <div class="auth-container">
+        <div class="auth-left">
+            <div class="auth-brand">Bitfinek<span>invest</span></div>
+            <div class="auth-tagline">
+                Welcome back! Access your crypto investment dashboard and manage your portfolio securely.
+            </div>
+        </div>
+        
+        <div class="auth-right">
+            <div class="auth-form-container">
+                <h2 class="auth-form-title">Welcome Back</h2>
+                <p class="auth-form-subtitle">Login to your account</p>
+                
+                <form id="loginForm">
+                    <div class="form-group">
+                        <label class="form-label">Email Address</label>
+                        <input type="email" id="email" class="form-input" placeholder="your@email.com" required>
+                        <div class="error-message" id="emailError"></div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Password</label>
+                        <input type="password" id="password" class="form-input" placeholder="Enter your password" required>
+                        <div class="error-message" id="passwordError"></div>
+                    </div>
+                    
+                    <button type="submit" class="btn btn-gold btn-full">Login</button>
+                </form>
+                
+                <div class="auth-footer">
+                    Don't have an account? <a href="register.html">Register here</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Loading Overlay -->
+    <div class="loading" id="loading">
+        <div class="spinner"></div>
+    </div>
+
+    <!-- Toast Container -->
+    <div id="toastContainer"></div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="/js/supabase.js"></script>
+    <script src="/js/auth.js"></script>
+    <script>
+        document.getElementById('loginForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            // Clear previous errors
+            document.querySelectorAll('.error-message').forEach(el => el.textContent = '');
+            document.querySelectorAll('.form-input').forEach(el => el.classList.remove('error'));
+            
+            const email = document.getElementById('email').value.trim();
+            const password = document.getElementById('password').value;
+            
+            if (!email || !password) {
+                showToast('Please fill in all fields', 'error');
+                return;
+            }
+            
+            showLoading();
+            
+            try {
+                const { data, error } = await supabase.auth.signInWithPassword({
+                    email: email,
+                    password: password
+                });
+                
+                if (error) throw error;
+                
+                // Check if email is verified
+                const { data: profile, error: profileError } = await supabase
+                    .from('profiles')
+                    .select('*')
+                    .eq('id', data.user.id)
+                    .single();
+                
+                if (profileError) throw profileError;
+                
+                if (!profile.email_verified) {
+                    hideLoading();
+                    showToast('Please verify your email first', 'warning');
+                    setTimeout(() => {
+                        window.location.href = `verify.html?email=${encodeURIComponent(email)}`;
+                    }, 2000);
+                    return;
+                }
+                
+                hideLoading();
+                showToast('Login successful!', 'success');
+                
+                // Redirect based on profile completion
+                setTimeout(() => {
+                    if (!profile.profile_completed) {
+                        window.location.href = 'complete-profile.html';
+                    } else if (profile.role === 'admin') {
+                        window.location.href = 'admin/dashboard.html';
+                    } else {
+                        window.location.href = 'dashboard.html';
+                    }
+                }, 1500);
+                
+            } catch (error) {
+                hideLoading();
+                showToast(error.message || 'Login failed. Please check your credentials.', 'error');
+            }
+        });
+    </script>
+</body>
+</html>
