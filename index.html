@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bitfinekinvest - Professional Crypto Investment Platform</title>
+    <title>Bitfinekinvest - Crypto Investment Platform</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -15,7 +15,7 @@
     <div id="splash">
         <div class="splash-content">
             <div class="splash-logo">Bitfinekinvest</div>
-            <div class="splash-tagline">Professional Crypto Investment</div>
+            <div class="splash-tagline">Secure Crypto Investment</div>
             <div class="splash-loader"></div>
         </div>
     </div>
@@ -36,16 +36,78 @@
         <div class="hero-content">
             <div class="hero-text">
                 <h1>
-                    Professional <span class="hero-highlight">Crypto Investment</span> Management
+                    Smart <span class="hero-highlight">Crypto Investment</span> Management
                 </h1>
                 <p>
                     Securely invest in cryptocurrency through our verified platform. 
                     Expert oversight, transparent operations, and manual verification 
-                    ensure every transaction meets professional standards.
+                    ensure every transaction meets the highest standards.
                 </p>
                 <div class="hero-buttons">
                     <a href="register.html" class="btn btn-primary">Start Investing</a>
                     <a href="#features" class="btn btn-secondary">Learn More</a>
+                </div>
+            </div>
+            <div class="hero-mockup">
+                <div class="phone-frame">
+                    <div class="phone-notch"></div>
+                    <div class="phone-screen">
+                        <div class="mockup-header">
+                            <div class="mockup-time">9:41</div>
+                            <div class="mockup-logo">Bitfinekinvest</div>
+                        </div>
+                        <div class="mockup-stats">
+                            <div class="mockup-stat-card">
+                                <div class="mockup-stat-label">Total Balance</div>
+                                <div class="mockup-stat-value">$24,580.00</div>
+                                <div class="mockup-stat-change">+12.5% this month</div>
+                            </div>
+                        </div>
+                        <div class="mockup-cards">
+                            <div class="mockup-card gold">
+                                <div class="mockup-card-header">
+                                    <span>GOLD Plan</span>
+                                    <span class="mockup-badge">Active</span>
+                                </div>
+                                <div class="mockup-card-amount">$15,000</div>
+                                <div class="mockup-card-progress">
+                                    <div class="mockup-progress-bar" style="width: 65%"></div>
+                                </div>
+                                <div class="mockup-card-footer">
+                                    <span>10% weekly</span>
+                                    <span>12 days left</span>
+                                </div>
+                            </div>
+                            <div class="mockup-card blue">
+                                <div class="mockup-card-header">
+                                    <span>PLATINUM Plan</span>
+                                    <span class="mockup-badge">Active</span>
+                                </div>
+                                <div class="mockup-card-amount">$5,000</div>
+                                <div class="mockup-card-progress">
+                                    <div class="mockup-progress-bar" style="width: 40%"></div>
+                                </div>
+                                <div class="mockup-card-footer">
+                                    <span>5% weekly</span>
+                                    <span>18 days left</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="mockup-actions">
+                            <div class="mockup-action-btn">
+                                <div class="mockup-action-icon">💎</div>
+                                <div class="mockup-action-text">Invest</div>
+                            </div>
+                            <div class="mockup-action-btn">
+                                <div class="mockup-action-icon">💰</div>
+                                <div class="mockup-action-text">Withdraw</div>
+                            </div>
+                            <div class="mockup-action-btn">
+                                <div class="mockup-action-icon">📊</div>
+                                <div class="mockup-action-text">History</div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -56,14 +118,10 @@
         <div class="features-container">
             <div class="section-title">
                 <h2>Why Choose Bitfinekinvest</h2>
-                <p>Professional crypto investment management with verified security</p>
+                <p>Crypto investment management with verified security</p>
             </div>
             <div class="features-grid">
-                <div class="feature-card">
-                    <div class="feature-icon">🔐</div>
-                    <h3>Manual Verification</h3>
-                    <p>Every deposit and withdrawal is manually verified by our team. No automated transfers ensure maximum security and fraud prevention.</p>
-                </div>
+                
                 <div class="feature-card">
                     <div class="feature-icon">💎</div>
                     <h3>Crypto-Only Platform</h3>
@@ -71,7 +129,7 @@
                 </div>
                 <div class="feature-card">
                     <div class="feature-icon">📊</div>
-                    <h3>Professional Dashboard</h3>
+                    <h3>Intuitive Dashboard</h3>
                     <p>Track your investments, view returns, manage withdrawals, and monitor all transactions through our intuitive dashboard interface.</p>
                 </div>
                 <div class="feature-card">
@@ -93,7 +151,186 @@
         </div>
     </section>
 
-    <!-- Security Section -->
+    <!-- Crypto Prices Section -->
+    <section class="crypto-section">
+        <div class="crypto-container">
+            <div class="section-title">
+                <h2>Live Crypto Market</h2>
+                <p>Real-time cryptocurrency prices and market data</p>
+            </div>
+            
+            <div class="crypto-grid">
+                <div class="crypto-card">
+                    <div class="crypto-header">
+                        <div class="crypto-icon btc">₿</div>
+                        <div class="crypto-info">
+                            <h3>Bitcoin</h3>
+                            <span class="crypto-symbol">BTC</span>
+                        </div>
+                    </div>
+                    <div class="crypto-price" id="btc-price">$43,250.00</div>
+                    <div class="crypto-change positive" id="btc-change">+2.45%</div>
+                    <div class="crypto-stats">
+                        <div class="crypto-stat">
+                            <span class="stat-label">24h Volume</span>
+                            <span class="stat-value" id="btc-volume">$28.5B</span>
+                        </div>
+                        <div class="crypto-stat">
+                            <span class="stat-label">Market Cap</span>
+                            <span class="stat-value" id="btc-cap">$847B</span>
+                        </div>
+                    </div>
+                    <div class="crypto-chart">
+                        <svg viewBox="0 0 100 30" preserveAspectRatio="none">
+                            <polyline points="0,20 10,15 20,18 30,12 40,14 50,8 60,10 70,6 80,9 90,5 100,7" 
+                                      fill="none" stroke="currentColor" stroke-width="2"/>
+                        </svg>
+                    </div>
+                </div>
+
+                <div class="crypto-card">
+                    <div class="crypto-header">
+                        <div class="crypto-icon eth">Ξ</div>
+                        <div class="crypto-info">
+                            <h3>Ethereum</h3>
+                            <span class="crypto-symbol">ETH</span>
+                        </div>
+                    </div>
+                    <div class="crypto-price" id="eth-price">$2,285.50</div>
+                    <div class="crypto-change positive" id="eth-change">+3.12%</div>
+                    <div class="crypto-stats">
+                        <div class="crypto-stat">
+                            <span class="stat-label">24h Volume</span>
+                            <span class="stat-value" id="eth-volume">$15.2B</span>
+                        </div>
+                        <div class="crypto-stat">
+                            <span class="stat-label">Market Cap</span>
+                            <span class="stat-value" id="eth-cap">$274B</span>
+                        </div>
+                    </div>
+                    <div class="crypto-chart">
+                        <svg viewBox="0 0 100 30" preserveAspectRatio="none">
+                            <polyline points="0,25 10,22 20,19 30,15 40,17 50,13 60,11 70,8 80,10 90,6 100,4" 
+                                      fill="none" stroke="currentColor" stroke-width="2"/>
+                        </svg>
+                    </div>
+                </div>
+
+                <div class="crypto-card">
+                    <div class="crypto-header">
+                        <div class="crypto-icon usdt">₮</div>
+                        <div class="crypto-info">
+                            <h3>Tether</h3>
+                            <span class="crypto-symbol">USDT</span>
+                        </div>
+                    </div>
+                    <div class="crypto-price" id="usdt-price">$1.00</div>
+                    <div class="crypto-change neutral" id="usdt-change">+0.01%</div>
+                    <div class="crypto-stats">
+                        <div class="crypto-stat">
+                            <span class="stat-label">24h Volume</span>
+                            <span class="stat-value" id="usdt-volume">$45.8B</span>
+                        </div>
+                        <div class="crypto-stat">
+                            <span class="stat-label">Market Cap</span>
+                            <span class="stat-value" id="usdt-cap">$97.5B</span>
+                        </div>
+                    </div>
+                    <div class="crypto-chart">
+                        <svg viewBox="0 0 100 30" preserveAspectRatio="none">
+                            <polyline points="0,15 10,15 20,15 30,15 40,15 50,15 60,15 70,15 80,15 90,15 100,15" 
+                                      fill="none" stroke="currentColor" stroke-width="2"/>
+                        </svg>
+                    </div>
+                </div>
+
+                <div class="crypto-card">
+                    <div class="crypto-header">
+                        <div class="crypto-icon bnb">B</div>
+                        <div class="crypto-info">
+                            <h3>BNB</h3>
+                            <span class="crypto-symbol">BNB</span>
+                        </div>
+                    </div>
+                    <div class="crypto-price" id="bnb-price">$315.80</div>
+                    <div class="crypto-change positive" id="bnb-change">+1.87%</div>
+                    <div class="crypto-stats">
+                        <div class="crypto-stat">
+                            <span class="stat-label">24h Volume</span>
+                            <span class="stat-value" id="bnb-volume">$1.2B</span>
+                        </div>
+                        <div class="crypto-stat">
+                            <span class="stat-label">Market Cap</span>
+                            <span class="stat-value" id="bnb-cap">$48.7B</span>
+                        </div>
+                    </div>
+                    <div class="crypto-chart">
+                        <svg viewBox="0 0 100 30" preserveAspectRatio="none">
+                            <polyline points="0,18 10,16 20,14 30,17 40,15 50,12 60,14 70,10 80,12 90,9 100,11" 
+                                      fill="none" stroke="currentColor" stroke-width="2"/>
+                        </svg>
+                    </div>
+                </div>
+
+                <div class="crypto-card">
+                    <div class="crypto-header">
+                        <div class="crypto-icon sol">◎</div>
+                        <div class="crypto-info">
+                            <h3>Solana</h3>
+                            <span class="crypto-symbol">SOL</span>
+                        </div>
+                    </div>
+                    <div class="crypto-price" id="sol-price">$102.45</div>
+                    <div class="crypto-change positive" id="sol-change">+5.23%</div>
+                    <div class="crypto-stats">
+                        <div class="crypto-stat">
+                            <span class="stat-label">24h Volume</span>
+                            <span class="stat-value" id="sol-volume">$2.8B</span>
+                        </div>
+                        <div class="crypto-stat">
+                            <span class="stat-label">Market Cap</span>
+                            <span class="stat-value" id="sol-cap">$44.2B</span>
+                        </div>
+                    </div>
+                    <div class="crypto-chart">
+                        <svg viewBox="0 0 100 30" preserveAspectRatio="none">
+                            <polyline points="0,22 10,20 20,16 30,18 40,14 50,10 60,12 70,8 80,6 90,4 100,3" 
+                                      fill="none" stroke="currentColor" stroke-width="2"/>
+                        </svg>
+                    </div>
+                </div>
+
+                <div class="crypto-card">
+                    <div class="crypto-header">
+                        <div class="crypto-icon xrp">✕</div>
+                        <div class="crypto-info">
+                            <h3>Ripple</h3>
+                            <span class="crypto-symbol">XRP</span>
+                        </div>
+                    </div>
+                    <div class="crypto-price" id="xrp-price">$0.62</div>
+                    <div class="crypto-change negative" id="xrp-change">-1.24%</div>
+                    <div class="crypto-stats">
+                        <div class="crypto-stat">
+                            <span class="stat-label">24h Volume</span>
+                            <span class="stat-value" id="xrp-volume">$1.5B</span>
+                        </div>
+                        <div class="crypto-stat">
+                            <span class="stat-label">Market Cap</span>
+                            <span class="stat-value" id="xrp-cap">$34.8B</span>
+                        </div>
+                    </div>
+                    <div class="crypto-chart">
+                        <svg viewBox="0 0 100 30" preserveAspectRatio="none">
+                            <polyline points="0,10 10,12 20,14 30,11 40,13 50,16 60,14 70,18 80,16 90,20 100,22" 
+                                      fill="none" stroke="currentColor" stroke-width="2"/>
+                        </svg>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </section>
     <section class="security">
         <div class="security-container">
             <div class="security-content">
@@ -149,7 +386,7 @@
         <div class="cta-content">
             <h2>Ready to Start Investing?</h2>
             <p>
-                Join Bitfinekinvest today and access professional crypto investment 
+                Join Bitfinekinvest today and access secure crypto investment 
                 management with verified security and transparent operations.
             </p>
             <a href="register.html" class="btn btn-primary">Create Your Account</a>
@@ -186,6 +423,59 @@
                 }
             });
         });
+
+        // Simulate live crypto price updates
+        function updateCryptoPrices() {
+            const cryptos = [
+                { id: 'btc', basePrice: 43250, volatility: 500 },
+                { id: 'eth', basePrice: 2285.50, volatility: 50 },
+                { id: 'usdt', basePrice: 1.00, volatility: 0.01 },
+                { id: 'bnb', basePrice: 315.80, volatility: 10 },
+                { id: 'sol', basePrice: 102.45, volatility: 5 },
+                { id: 'xrp', basePrice: 0.62, volatility: 0.02 }
+            ];
+
+            cryptos.forEach(crypto => {
+                const priceElement = document.getElementById(`${crypto.id}-price`);
+                const changeElement = document.getElementById(`${crypto.id}-change`);
+                
+                if (priceElement) {
+                    // Random price fluctuation
+                    const change = (Math.random() - 0.5) * crypto.volatility;
+                    const newPrice = crypto.basePrice + change;
+                    const percentChange = ((change / crypto.basePrice) * 100).toFixed(2);
+                    
+                    // Update price
+                    if (crypto.id === 'usdt') {
+                        priceElement.textContent = `$${newPrice.toFixed(4)}`;
+                    } else if (crypto.id === 'xrp') {
+                        priceElement.textContent = `$${newPrice.toFixed(4)}`;
+                    } else if (newPrice < 1000) {
+                        priceElement.textContent = `$${newPrice.toFixed(2)}`;
+                    } else {
+                        priceElement.textContent = `$${newPrice.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+                    }
+                    
+                    // Update change percentage
+                    if (changeElement) {
+                        const isPositive = percentChange >= 0;
+                        const isNeutral = Math.abs(percentChange) < 0.1;
+                        
+                        changeElement.textContent = `${isPositive ? '+' : ''}${percentChange}%`;
+                        changeElement.className = `crypto-change ${isNeutral ? 'neutral' : isPositive ? 'positive' : 'negative'}`;
+                    }
+                    
+                    // Animate price update
+                    priceElement.style.transform = 'scale(1.05)';
+                    setTimeout(() => {
+                        priceElement.style.transform = 'scale(1)';
+                    }, 200);
+                }
+            });
+        }
+
+        // Update prices every 5 seconds for demo
+        setInterval(updateCryptoPrices, 5000);
     </script>
 </body>
 </html>
