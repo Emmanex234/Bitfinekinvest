@@ -8,14 +8,14 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Work+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="css/styles.css">
 </head>
 <body>
     <div class="auth-container">
         <div class="auth-left">
             <div class="auth-brand">Bitfinek<span>invest</span></div>
             <div class="auth-tagline">
-                Join our professional crypto investment platform. Secure, transparent, and verified operations for your peace of mind.
+                Join our crypto investment platform. Secure, transparent, and verified operations for your peace of mind.
             </div>
         </div>
         
@@ -91,8 +91,8 @@
     <div id="toastContainer"></div>
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="/js/supabase.js"></script>
-    <script src="/js/auth.js"></script>
+    <script src="js/supabase.js"></script>
+    <script src="js/auth.js"></script>
     <script>
         document.getElementById('registerForm').addEventListener('submit', async (e) => {
             e.preventDefault();
@@ -184,32 +184,45 @@
                 
                 if (profileError) throw profileError;
                 
-                // Generate and send verification code
+                // Generate verification code
                 const verificationCode = generateVerificationCode();
-                await sendVerificationEmail(email, verificationCode, fullName);
                 
-                // Store verification code
+                // Store verification code in database
                 const { error: verifyError } = await supabaseClient
                     .from('email_verifications')
                     .insert([{
                         email: email,
                         code: verificationCode,
-                        expires_at: new Date(Date.now() + 15 * 60000).toISOString() // 15 minutes
+                        expires_at: new Date(Date.now() + 15 * 60000).toISOString()
                     }]);
                 
                 if (verifyError) throw verifyError;
                 
+                // Call Supabase Edge Function to send email (if you set it up)
+                // Or use a backend endpoint you create
+                try {
+                    await sendEmailViaBackend(email, verificationCode, fullName);
+                } catch (emailError) {
+                    console.warn('Email sending failed, but registration succeeded:', emailError);
+                    // Continue anyway - user can resend from verify page
+                }
+                
                 hideLoading();
-                showToast('Account created! Please check your email for verification code.', 'success');
+                showToast('Account created! Check your email for verification code.', 'success');
+                
+                // Show code in console for testing (REMOVE IN PRODUCTION!)
+                console.log('🔑 VERIFICATION CODE (for testing):', verificationCode);
+                console.log('📧 Email:', email);
                 
                 // Redirect to verification page
                 setTimeout(() => {
-                    window.location.href = `verify.html?email=${encodeURIComponent(email)}`;
+                    window.location.href = 'verify.html?email=' + encodeURIComponent(email);
                 }, 2000);
                 
             } catch (error) {
                 hideLoading();
                 showToast(error.message || 'Registration failed. Please try again.', 'error');
+                console.error('Registration error:', error);
             }
         });
         
@@ -228,17 +241,28 @@
             return Math.floor(100000 + Math.random() * 900000).toString();
         }
         
-        async function sendVerificationEmail(email, code, name) {
-            // In production, this would call your email service
-            // For now, we'll just log it
-            console.log(`Verification code for ${email}: ${code}`);
-            
-            // You would integrate with an email service like:
-            // - SendGrid
-            // - AWS SES
-            // - Mailgun
-            // Example implementation would go here
+        // Backend email sending function
+async function sendEmailViaBackend(email, code, name) {
+    try {
+        const response = await fetch('/api/send-email', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email, code, name })
+        });
+        
+        const result = await response.json();
+        
+        if (!result.success) {
+            throw new Error(result.error || 'Failed to send email');
         }
+        
+        console.log('✅ Email sent successfully:', result);
+        return result;
+    } catch (error) {
+        console.error('❌ Email sending failed:', error);
+        throw error;
+    }
+}
     </script>
 </body>
 </html>
